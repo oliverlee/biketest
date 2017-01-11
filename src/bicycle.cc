@@ -164,9 +164,11 @@ void Bicycle::set_v_dt(real_t v, real_t dt) {
     m_v = v;
     m_dt = dt;
 
+    m_K = constants::g*m_K0 + v*v*m_K2;
+
     // M is positive definite so use the Cholesky decomposition in solving the linear system
     m_A(0, index(state_index_t::steer_angle)) = v * std::cos(m_lambda) / m_w; /* steer angle component of yaw rate */
-    m_A.block<o, o>(3, 1) = -m_M_llt.solve(constants::g*m_K0 + v*v*m_K2);
+    m_A.block<o, o>(3, 1) = -m_M_llt.solve(m_K);
     m_A.bottomRightCorner<o, o>() = -m_M_llt.solve(v*m_C1);
 
     // Calculate M^-1 as we need it for discretization

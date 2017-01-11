@@ -144,6 +144,7 @@ class Bicycle final : public DiscreteLinear<5, 2, 2, 2> {
         const second_order_matrix_t& C1() const;
         const second_order_matrix_t& K0() const;
         const second_order_matrix_t& K2() const;
+        const second_order_matrix_t& K() const;
         real_t wheelbase() const;
         real_t trail() const;
         real_t steer_axis_tilt() const;
@@ -171,6 +172,7 @@ class Bicycle final : public DiscreteLinear<5, 2, 2, 2> {
         second_order_matrix_t m_C1;
         second_order_matrix_t m_K0;
         second_order_matrix_t m_K2;
+        second_order_matrix_t m_K; // g*K0 + v*v*K2
         real_t m_w;
         real_t m_c;
         real_t m_lambda;
@@ -341,6 +343,9 @@ inline const Bicycle::second_order_matrix_t& Bicycle::K0() const {
 }
 inline const Bicycle::second_order_matrix_t& Bicycle::K2() const {
     return m_K2;
+}
+inline const Bicycle::second_order_matrix_t& Bicycle::K() const {
+    return m_K;
 }
 inline real_t Bicycle::wheelbase() const {
     return m_w;
