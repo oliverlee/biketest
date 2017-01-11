@@ -130,6 +130,7 @@ class Bicycle final : public DiscreteLinear<5, 2, 2, 2> {
         void set_moore_parameters();
 
         real_t solve_constraint_pitch(const state_t& x, real_t guess) const;
+        real_t calculate_handlebar_feedback_torque(const state_t& x, const input_t& u) const;
 
         // (pseudo) parameter accessors
         const state_matrix_t& A() const;
