@@ -164,9 +164,11 @@ void Bicycle::set_v_dt(real_t v, real_t dt) {
     m_v = v;
     m_dt = dt;
 
+    m_K = constants::g*m_K0 + v*v*m_K2;
+
     // M is positive definite so use the Cholesky decomposition in solving the linear system
     m_A(0, index(state_index_t::steer_angle)) = v * std::cos(m_lambda) / m_w; /* steer angle component of yaw rate */
-    m_A.block<o, o>(3, 1) = -m_M_llt.solve(constants::g*m_K0 + v*v*m_K2);
+    m_A.block<o, o>(3, 1) = -m_M_llt.solve(m_K);
     m_A.bottomRightCorner<o, o>() = -m_M_llt.solve(v*m_C1);
 
     // Calculate M^-1 as we need it for discretization
@@ -335,6 +337,42 @@ std::pow(std::cos(pitch), two)*std::pow(std::cos(x[index(state_index_t::roll_ang
                 );
     };
     return boost::math::tools::newton_raphson_iterate(constraint_function, guess, min, max, digits);
+}
+
+real_t Bicycle::calculate_handlebar_feedback_torque(const state_t& x, const input_t& u) const {
+    /*
+     * The equations of motion for the Whipple model can be written as:
+     *   M [phi_dd  ] + v*C1 [phi_d  ] + K [phi  ] = [T_phi  ]
+     *     [delta_dd]        [delta_d]     [delta] = [T_delta]
+     * where v*C1 is used to distinguish the "damping" matrix from the state
+     * space output matrix C. In this simulation, T_phi defined to be 0 as there
+     * is no way for the user nor the environment to supply a roll torque.
+     *
+     * The dynamics of the handlebar are governed by the following equation of
+     * motion:
+     *  I_delta * delta_dd = T_delta + T_m.
+     *
+     * Note: Positive torque and steer angle is clockwise as seen from the rider
+     * looking down at the handlebars.
+     *
+     * In standard state space form, the equations of motion for the system are:
+     *  [phi_d   ] = A [phi    ] + B [T_phi]
+     *  [delta_d ]     [delta  ]     [T_delta]
+     *  [phi_dd  ]     [phi_d  ]
+     *  [delta_dd]     [delta_d]
+     *
+     * As we need an estimate of the steer angular acceleration, we use the
+     * last row of A and B _with_ the assumption that the full state is available.
+     * As the state vector is appended with yaw angle in this implementation,
+     * this must be accounted for when calculating delta_dd.
+     *
+     * The output of this function is very susceptible to error/noise in the
+     * state or noise in the input. For use with equipment, it is suggested to
+     * filter the returned value.
+     */
+    auto steer_accel_index = index(state_index_t::steer_rate);
+    real_t steer_acceleration = m_A.row(steer_accel_index)*x + m_B.row(steer_accel_index)*u;
+    return steer_acceleration - u[index(input_index_t::steer_torque)];
 }
 
 } // namespace model
