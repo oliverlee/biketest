@@ -26,7 +26,7 @@ int main(int argc, char* argv[]) {
     (void)argc;
     (void)argv;
 
-    model::BicycleWhipple bicycle(v0, dt);
+    model::BicycleWhipple bicycle(v0);
 
     model::BicycleWhipple::state_t x; // yaw angle, roll angle, steer angle, roll rate, steer rate
     x << 0, 0, 10, 10, 0; // define x0 in degrees
@@ -49,7 +49,7 @@ int main(int argc, char* argv[]) {
         N << " steps at " << fs << " Hz) ..." << std::endl;
     auto disc_start = std::chrono::system_clock::now();
     for (; current_sample < N; ++current_sample) {
-        x = bicycle.update_state(x);
+        x = bicycle.integrate_state(dt, x);
         system_state[current_sample] = x;
         system_state[current_sample] = x;
 

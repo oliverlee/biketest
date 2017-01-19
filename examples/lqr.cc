@@ -34,7 +34,7 @@ int main(int argc, char* argv[]) {
     (void)argc;
     (void)argv;
 
-    bicycle_t bicycle(v0, dt);
+    bicycle_t bicycle(v0);
     lqr_t lqr(bicycle,
             lqr_t::state_cost_t::Identity(),
             (lqr_t::input_cost_t() <<
@@ -48,7 +48,7 @@ int main(int argc, char* argv[]) {
     auto it_x = system_state.begin();
     start = std::chrono::system_clock::now();
     for (; it_x != system_state.end(); ++it_x) {
-        x = bicycle.update_state(x);
+        x = bicycle.integrate_state(dt, x);
         *it_x = x;
     }
     stop = std::chrono::system_clock::now();
@@ -67,7 +67,7 @@ int main(int argc, char* argv[]) {
     start = std::chrono::system_clock::now();
     for (; it_x != system_state.end(); ++it_x, ++it_u) {
         *it_u = lqr.control_calculate(x);
-        x = bicycle.update_state(x, *it_u);
+        x = bicycle.integrate_state(dt, x, *it_u);
         *it_x = x;
     }
     stop = std::chrono::system_clock::now();

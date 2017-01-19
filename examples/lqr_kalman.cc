@@ -34,7 +34,7 @@ int main(int argc, char* argv[]) {
     std::normal_distribution<> rn1(0,
             parameters::defaultvalue::kalman::R(1, 1));
 
-    model::BicycleWhipple bicycle(v0, dt);
+    model::BicycleWhipple bicycle(v0);
 
     controller::Lqr<model::BicycleWhipple> lqr(bicycle,
             controller::Lqr<model::BicycleWhipple>::state_cost_t::Identity(),
@@ -62,7 +62,7 @@ int main(int argc, char* argv[]) {
         auto u = lqr.control_calculate(kalman.x());
 
         // system simulate
-        x = bicycle.update_state(x, u);
+        x = bicycle.integrate_state(dt, x, u);
 
         // measure output with noise
         auto y = bicycle.calculate_output(x);

@@ -78,7 +78,7 @@ int main(int argc, char* argv[]) {
     std::normal_distribution<> rn0(0, sigma0);
     std::normal_distribution<> rn1(0, sigma1);
 
-    bicycle_t bicycle(v0, dt);
+    bicycle_t bicycle(v0);
     x << 0, 3, 5, 0, 0; // define x0 in degrees
     x *= constants::as_radians; // convert to radians
     aux.setZero();
@@ -140,7 +140,7 @@ int main(int argc, char* argv[]) {
         auto u = lqr.control_calculate(kalman.x(), reference(dt*current_sample));
 
         /* system simulate */
-        x = bicycle.update_state(x, u);
+        x = bicycle.integrate_state(dt, x, u);
 
         /* update auxiliary states */
         aux = bicycle.integrate_auxiliary_state(x, aux, bicycle.dt());
