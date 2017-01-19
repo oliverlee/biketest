@@ -22,7 +22,7 @@ namespace {
             std::chrono::high_resolution_clock::time_point time) {
         if (!error) {
             if (*count < N) {
-                *x = bicycle->update_state(*x);
+                *x = bicycle->integrate_state(dt, *x);
 
                 auto now = std::chrono::high_resolution_clock::now();
                 auto dt = std::chrono::duration_cast<std::chrono::microseconds>(now - time).count();
@@ -50,7 +50,7 @@ int main(int argc, char* argv[]) {
     (void)argc;
     (void)argv;
 
-    model::BicycleWhipple bicycle(v0, dt);
+    model::BicycleWhipple bicycle(v0);
     model::BicycleWhipple::state_t x;
     x << 0, 0, 10, 10, 0; // define in degrees
     x *= constants::as_radians;

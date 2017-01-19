@@ -21,7 +21,7 @@ int main(int argc, char* argv[]) {
     (void)argc;
     (void)argv;
 
-    model::BicycleWhipple bicycle(v0, dt);
+    model::BicycleWhipple bicycle(v0);
     model::BicycleWhipple::state_t x;
     x << 0, 0, 10, 10, 0; // define in degrees
     x *= constants::as_radians;
@@ -31,7 +31,7 @@ int main(int argc, char* argv[]) {
     auto start = std::chrono::high_resolution_clock::now();
 
     for (auto& state: discrete_time_system_state_n) {
-        state = bicycle.update_state(x);
+        state = bicycle.integrate_state(dt, x);
         x = state;
         server.wait_for_send_complete(); // wait for previous message to be sent
         server.async_send(asio::buffer(reinterpret_cast<uint8_t*>(x.data()),

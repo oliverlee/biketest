@@ -29,7 +29,7 @@ int main(int argc, char* argv[]) {
     std::normal_distribution<> r0(0, parameters::defaultvalue::kalman::R(0, 0));
     std::normal_distribution<> r1(0, parameters::defaultvalue::kalman::R(1, 1));
 
-    model::BicycleWhipple bicycle(v0, dt);
+    model::BicycleWhipple bicycle(v0);
     x << 0, 0, 10, 10, 0; // define x in degrees
     x *= constants::as_radians; // convert degrees to radians
 
@@ -59,7 +59,7 @@ int main(int argc, char* argv[]) {
     std::cout << std::endl << "simulating..." << std::endl;
     for (; it_x != system_state.end(); ++it_x, ++it_y, ++it_z, ++it_xh) {
         // simulate bicycle system
-        x = bicycle.update_state(x);
+        x = bicycle.integrate_state(dt, x);
         *it_x = x;
         *it_y = bicycle.calculate_output(x);
 

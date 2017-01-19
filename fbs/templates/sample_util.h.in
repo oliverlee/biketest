@@ -46,7 +46,7 @@
 
 namespace fbs {
 
-// TODO: generate per DiscreteLinear derived class
+// TODO: generate per Linear or DiscreteLinear derived class
 ::fbs::State state(const model::BicycleWhipple::state_t& x) {
     return ::fbs::State({{ vector('x', 'n') }});
 }
@@ -107,33 +107,29 @@ namespace fbs {
 
 flatbuffers::Offset<::fbs::Bicycle> create_bicycle(
         flatbuffers::FlatBufferBuilder& fbb,
-        const model::BicycleWhipple& bicycle, bool dt = true, bool v = true,
+        const model::BicycleWhipple& bicycle, bool v = true,
         bool M = true, bool C1 = true, bool K0 = true, bool K2 = true,
-        bool Ad = true, bool Bd = true, bool Cd = true, bool Dd = true) {
+        bool A = true, bool B = true, bool C = true, bool D = true) {
     double v_ = 0;
-    double dt_ = 0;
     auto M_ = second_order_matrix(bicycle.M());
     auto C1_ = second_order_matrix(bicycle.C1());
     auto K0_ = second_order_matrix(bicycle.K0());
     auto K2_ = second_order_matrix(bicycle.K2());
-    auto Ad_ = state_matrix(bicycle.Ad());
-    auto Bd_ = input_matrix(bicycle.Bd());
-    auto Cd_ = output_matrix(bicycle.Cd());
-    auto Dd_ = feedthrough_matrix(bicycle.Dd());
+    auto A_ = state_matrix(bicycle.A());
+    auto B_ = input_matrix(bicycle.B());
+    auto C_ = output_matrix(bicycle.C());
+    auto D_ = feedthrough_matrix(bicycle.D());
     auto Mp = &M_;
     auto C1p = &C1_;
     auto K0p = &K0_;
     auto K2p = &K2_;
-    auto Adp = &Ad_;
-    auto Bdp = &Bd_;
-    auto Cdp = &Cd_;
-    auto Ddp = &Dd_;
+    auto Ap = &A_;
+    auto Bp = &B_;
+    auto Cp = &C_;
+    auto Dp = &D_;
 
     if (v) {
         v_ = bicycle.v();
-    }
-    if (dt) {
-        dt_ = bicycle.dt();
     }
     if (!M) {
         Mp = nullptr;
@@ -147,20 +143,20 @@ flatbuffers::Offset<::fbs::Bicycle> create_bicycle(
     if (!K2) {
         K2p = nullptr;
     }
-    if (!Ad) {
-        Adp = nullptr;
+    if (!A) {
+        Ap = nullptr;
     }
-    if (!Bd) {
-        Bdp = nullptr;
+    if (!B) {
+        Bp = nullptr;
     }
-    if (!Cd) {
-        Cdp = nullptr;
+    if (!C) {
+        Cp = nullptr;
     }
-    if (!Dd) {
-        Ddp = nullptr;
+    if (!D) {
+        Dp = nullptr;
     }
-    return CreateBicycle(fbb, v_, dt_, Mp, C1p, K0p, K2p,
-            Adp, Bdp, Cdp, Ddp);
+    return CreateBicycle(fbb, v_, Mp, C1p, K0p, K2p,
+            Ap, Bp, Cp, Dp);
 }
 
 flatbuffers::Offset<::fbs::Kalman> create_kalman(

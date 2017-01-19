@@ -90,15 +90,14 @@ table Lqr {
 
 table Bicycle {
     v:double;
-    dt:double;
     M:SecondOrderMatrix;
     C1:SecondOrderMatrix;
     K0:SecondOrderMatrix;
     K2:SecondOrderMatrix;
-    Ad:StateMatrix;
-    Bd:InputMatrix;
-    Cd:OutputMatrix;
-    Dd:FeedthroughMatrix;
+    A:StateMatrix;
+    B:InputMatrix;
+    C:OutputMatrix;
+    D:FeedthroughMatrix;
 }
 
 table Sample {

@@ -38,15 +38,14 @@ symmetric_input_matrix_t = (real_t, (input_size, input_size))
 
 bicycle_t = [
         ('v', real_t),                      # bicycle forward speed
-        ('dt', real_t),                     # discrete time system sample time
         ('M',) + second_order_matrix_t,     # mass matrix
         ('C1',) + second_order_matrix_t,    # v proportional damping matrix
         ('K0',) + second_order_matrix_t,    # v independent stiffness matrix
         ('K2',) + second_order_matrix_t,    # v**2 prop. stiffness matrix
-        ('Ad',) + state_matrix_t,           # discrete time state matrix
-        ('Bd',) + input_matrix_t,           # discrete time input matrix
-        ('Cd',) + output_matrix_t,          # discrete time output matrix
-        ('Dd',) + feedthrough_matrix_t]     # discrete time feedthrough matrix
+        ('A',) + state_matrix_t,            # continuous time state matrix
+        ('B',) + input_matrix_t,            # continuous time input matrix
+        ('C',) + output_matrix_t,           # continuous time output matrix
+        ('D',) + feedthrough_matrix_t]      # continuous time feedthrough matrix
 
 kalman_t = [
         ('x',) + state_t,                   # state estimate

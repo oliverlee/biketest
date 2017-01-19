@@ -21,7 +21,7 @@ int main(int argc, char* argv[]) {
     (void)argc;
     (void)argv;
 
-    model::BicycleWhipple bicycle(v0, dt);
+    model::BicycleWhipple bicycle(v0);
 
     std::chrono::time_point<std::chrono::system_clock> cont_start, cont_stop;
     std::chrono::time_point<std::chrono::system_clock> disc_start, disc_stop;
@@ -83,7 +83,7 @@ int main(int argc, char* argv[]) {
     std::cout << "simulating (no input) discrete time system at constant speed..." << std::endl;
     x = x0;
     for (auto& state: discrete_time_system_state_n) {
-        state = bicycle.update_state(x);
+        state = bicycle.integrate_state(dt, x);
         x = state;
     }
 
@@ -91,7 +91,7 @@ int main(int argc, char* argv[]) {
     disc_start = std::chrono::system_clock::now();
     x = x0;
     for (auto& state: discrete_time_system_state_0) {
-        state = bicycle.update_state(x, model::BicycleWhipple::input_t::Zero());
+        state = bicycle.integrate_state(dt, x, model::BicycleWhipple::input_t::Zero());
         x = state;
     }
     disc_stop = std::chrono::system_clock::now();
