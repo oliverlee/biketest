@@ -39,11 +39,8 @@ class BicycleWhipple final : public Bicycle {
         BicycleWhipple(real_t v, real_t dt,
                 const state_space_map_t* discrete_state_space_map = nullptr);
 
-        virtual state_t update_state(const state_t& x, const input_t& u, const output_t& z) const override;
-        virtual state_t update_state(const state_t& x, const input_t& u) const override;
-        virtual output_t calculate_output(const state_t& x, const input_t& u) const override;
-        virtual state_t update_state(const state_t& x) const override;
-        virtual output_t calculate_output(const state_t& x) const override;
+        virtual state_t update_state(const state_t& x, const input_t& u = input_t::Zero(), const measurement_t& z = measurement_t::Zero()) const override;
+        virtual output_t calculate_output(const state_t& x, const input_t& u = input_t::Zero()) const override;
 
         state_t integrate_state(const state_t& x, const input_t& u, real_t t) const;
 

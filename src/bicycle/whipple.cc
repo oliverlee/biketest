@@ -38,25 +38,13 @@ BicycleWhipple::BicycleWhipple(real_t v, real_t dt,
     Bicycle(v, dt),
     m_discrete_state_space_map(discrete_state_space_map) { }
 
-BicycleWhipple::state_t BicycleWhipple::update_state(const BicycleWhipple::state_t& x, const BicycleWhipple::input_t& u, const BicycleWhipple::output_t& z) const {
+BicycleWhipple::state_t BicycleWhipple::update_state(const BicycleWhipple::state_t& x, const BicycleWhipple::input_t& u, const BicycleWhipple::measurement_t& z) const {
     (void)z;
-    return update_state(x, u);
-}
-
-BicycleWhipple::state_t BicycleWhipple::update_state(const BicycleWhipple::state_t& x, const BicycleWhipple::input_t& u) const {
     return m_Ad*x + m_Bd*u;
 }
 
 BicycleWhipple::output_t BicycleWhipple::calculate_output(const BicycleWhipple::state_t& x, const BicycleWhipple::input_t& u) const {
     return m_C*x + m_D*u;
-}
-
-BicycleWhipple::state_t BicycleWhipple::update_state(const BicycleWhipple::state_t& x) const {
-    return m_Ad*x;
-}
-
-BicycleWhipple::output_t BicycleWhipple::calculate_output(const BicycleWhipple::state_t& x) const {
-    return m_C*x;
 }
 
 BicycleWhipple::state_t BicycleWhipple::integrate_state(const BicycleWhipple::state_t& x, const BicycleWhipple::input_t& u, real_t dt) const {
