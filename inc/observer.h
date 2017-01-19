@@ -14,7 +14,9 @@ class ObserverBase {
 
 template <typename T>
 class Observer : private ObserverBase {
-    static_assert(std::is_base_of<model::DiscreteLinearBase, T>::value, "Invalid template parameter type for Observer");
+    static_assert(
+            (std::is_base_of<model::LinearBase, T>::value || std::is_base_of<model::DiscreteLinearBase, T>::value),
+            "Invalid template parameter type for Observer");
 
     public:
         using state_t = typename T::state_t;

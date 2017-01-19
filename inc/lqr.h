@@ -10,7 +10,9 @@ using real_t = model::real_t;
 
 template<typename T>
 class Lqr {
-    static_assert(std::is_base_of<model::DiscreteLinearBase, T>::value, "Invalid template parameter type for Lqr");
+    static_assert(
+            (std::is_base_of<model::LinearBase, T>::value || std::is_base_of<model::DiscreteLinearBase, T>::value),
+            "Invalid template parameter type for Lqr");
     public:
         using state_t = typename T::state_t;
         using input_t = typename T::input_t;

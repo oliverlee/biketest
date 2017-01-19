@@ -4,6 +4,8 @@
  * See kalman.h for template class declaration.
  */
 
+// FIXME: Allow use with DiscreateLinear OR Linear classes
+
 namespace observer {
 
 template <typename T>

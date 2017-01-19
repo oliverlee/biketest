@@ -3,7 +3,7 @@
 #include <Eigen/Cholesky>
 #include <boost/numeric/odeint/stepper/runge_kutta_dopri5.hpp>
 #include <boost/numeric/odeint/algebra/vector_space_algebra.hpp>
-#include "discrete_linear.h"
+#include "linear.h"
 
 namespace model {
 
@@ -22,7 +22,7 @@ namespace model {
  * index access.
  */
 
-class Bicycle : public DiscreteLinear<5, 2, 2, 2> {
+class Bicycle : public Linear<5, 2, 2, 2> {
     public:
         static constexpr unsigned int p = 4;
         using auxiliary_state_t = Eigen::Matrix<real_t, p, 1>;
@@ -69,12 +69,12 @@ class Bicycle : public DiscreteLinear<5, 2, 2, 2> {
         static bool is_auxiliary_state_field(full_state_index_t field);
 
         /* pure virtual state and output functions repeated */
-        virtual state_t update_state(const state_t& x, const input_t& u, const measurement_t& z) const override = 0;
-        virtual output_t calculate_output(const state_t& x, const input_t& u) const override = 0;
+        virtual state_t integrate_state(real_t t, const state_t& x, const input_t& u, const measurement_t& z) const override = 0;
+        virtual output_t calculate_output(const state_t& x, const input_t& u) const override final;
 
         auxiliary_state_t integrate_auxiliary_state(const state_t& x, const auxiliary_state_t& x_aux, real_t t) const;
 
-        virtual void set_v_dt(real_t v, real_t dt); /* this function _always_ recalculates state space */
+        virtual void set_v(real_t v); /* this function _always_ recalculates state space */
         virtual void set_M(second_order_matrix_t& M, bool recalculate_state_space);
         virtual void set_C1(second_order_matrix_t& C1, bool recalculate_state_space);
         virtual void set_K0(second_order_matrix_t& K0, bool recalculate_state_space);
@@ -87,20 +87,16 @@ class Bicycle : public DiscreteLinear<5, 2, 2, 2> {
         void set_C(const output_matrix_t& C);
         void set_D(const feedthrough_matrix_t& D);
 
-        virtual void set_state_space() = 0; /* this pure virtual function is defined */
+        virtual void set_state_space();
         void set_moore_parameters();
 
         real_t solve_constraint_pitch(real_t roll_angle, real_t steer_angle, real_t guess) const;
 
         // (pseudo) parameter accessors
-        virtual const state_matrix_t& Ad() const override = 0;
-        virtual const input_matrix_t& Bd() const override = 0;
-        virtual const output_matrix_t& Cd() const override = 0;
-        virtual const feedthrough_matrix_t& Dd() const override = 0;
-        const state_matrix_t& A() const;
-        const input_matrix_t& B() const;
-        const output_matrix_t& C() const;
-        const feedthrough_matrix_t& D() const;
+        virtual const state_matrix_t& A() const override final;
+        virtual const input_matrix_t& B() const override final;
+        virtual const output_matrix_t& C() const override final;
+        virtual const feedthrough_matrix_t& D() const override final;
         const second_order_matrix_t& M() const;
         const second_order_matrix_t& C1() const;
         const second_order_matrix_t& K0() const;
@@ -111,7 +107,6 @@ class Bicycle : public DiscreteLinear<5, 2, 2, 2> {
         real_t rear_wheel_radius() const;
         real_t front_wheel_radius() const;
         real_t v() const;
-        virtual real_t dt() const override final;
 
         bool need_recalculate_state_space() const;
         bool need_recalculate_moore_parameters() const;
@@ -123,7 +118,6 @@ class Bicycle : public DiscreteLinear<5, 2, 2, 2> {
 
     protected:
         real_t m_v; // parameterized forward speed
-        real_t m_dt; // sampling time of discrete time system
         second_order_matrix_t m_M;
         second_order_matrix_t m_C1;
         second_order_matrix_t m_K0;
@@ -161,9 +155,9 @@ class Bicycle : public DiscreteLinear<5, 2, 2, 2> {
                 const second_order_matrix_t& K0, const second_order_matrix_t& K2,
                 real_t wheelbase, real_t trail, real_t steer_axis_tilt,
                 real_t rear_wheel_radius, real_t front_wheel_radius,
-                real_t v, real_t dt);
-        Bicycle(const char* param_file, real_t v, real_t dt);
-        Bicycle(real_t v, real_t dt);
+                real_t v);
+        Bicycle(const char* param_file, real_t v);
+        Bicycle(real_t v);
         void set_parameters_from_file(const char* param_file);
 }; // class Bicycle
 

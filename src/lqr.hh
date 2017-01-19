@@ -3,6 +3,8 @@
  * See lqr.h for template class declaration.
  */
 
+// FIXME: Allow use with DiscreateLinear OR Linear classes
+
 namespace controller {
 
 template<typename T>
