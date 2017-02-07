@@ -3,7 +3,6 @@
 #include <fstream>
 #include <stdexcept>
 #include <tuple>
-#include <Eigen/QR>
 #include <unsupported/Eigen/MatrixFunctions>
 #include <boost/math/tools/roots.hpp>
 #include "bicycle/whipple.h"
