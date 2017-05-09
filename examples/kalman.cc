@@ -28,6 +28,7 @@ int main(int argc, char* argv[]) {
     std::mt19937 gen(rd());
     std::normal_distribution<> r0(0, parameters::defaultvalue::kalman::R(0, 0));
     std::normal_distribution<> r1(0, parameters::defaultvalue::kalman::R(1, 1));
+    std::normal_distribution<> r2(0, parameters::defaultvalue::kalman::R(2, 2));
 
     model::BicycleWhipple bicycle(v0, dt);
     x << 0, 0, 10, 10, 0; // define x in degrees
@@ -67,6 +68,7 @@ int main(int argc, char* argv[]) {
         *it_z = *it_y;
         (*it_z)(0) += r0(gen);
         (*it_z)(1) += r1(gen);
+        (*it_z)(2) += r2(gen);
 
         // update observer
         kalman.time_update();

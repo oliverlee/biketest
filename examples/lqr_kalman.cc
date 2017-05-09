@@ -33,6 +33,8 @@ int main(int argc, char* argv[]) {
             parameters::defaultvalue::kalman::R(0, 0));
     std::normal_distribution<> rn1(0,
             parameters::defaultvalue::kalman::R(1, 1));
+    std::normal_distribution<> rn2(0,
+            parameters::defaultvalue::kalman::R(2, 2));
 
     model::BicycleWhipple bicycle(v0, dt);
 
@@ -69,6 +71,7 @@ int main(int argc, char* argv[]) {
         auto z = y;
         z(0) += rn0(gen);
         z(1) += rn1(gen);
+        z(2) += rn2(gen);
 
         // observer time/measurement update
         kalman.time_update(u);

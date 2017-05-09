@@ -29,6 +29,7 @@ void ConvergenceTest::SetUp() {
     m_gen = std::mt19937(m_rd());
     m_r0 = std::normal_distribution<>(0, parameters::defaultvalue::kalman::R(0, 0));
     m_r1 = std::normal_distribution<>(0, parameters::defaultvalue::kalman::R(1, 1));
+    m_r1 = std::normal_distribution<>(0, parameters::defaultvalue::kalman::R(2, 2));
 }
 
 void ConvergenceTest::TearDown() {

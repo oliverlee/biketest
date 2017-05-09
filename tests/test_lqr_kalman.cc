@@ -12,6 +12,7 @@ class LqrKalmanConvergenceTest: public ConvergenceTest {
                 auto z = m_bicycle->calculate_output(m_x);
                 z(0) += m_r0(m_gen);
                 z(1) += m_r1(m_gen);
+                z(2) += m_r1(m_gen);
 
                 m_kalman->time_update(u);
                 m_kalman->measurement_update(z);

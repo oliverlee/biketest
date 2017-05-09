@@ -29,7 +29,8 @@ namespace bicycle {
     const model::Bicycle::output_matrix_t C(
             (model::Bicycle::output_matrix_t() <<
              1, 0, 0, 0, 0,                // yaw angle
-             0, 0, 1, 0, 0).finished());   // steer angle
+             0, 0, 1, 0, 0,                // steer angle
+             0, 0, 0, 0, 1).finished());   // steer rate
     const model::Bicycle::feedthrough_matrix_t D(model::Bicycle::feedthrough_matrix_t::Zero());
 } // namespace bicycle
 
@@ -51,8 +52,9 @@ namespace kalman {
    }
    const observer::Kalman<model::Bicycle>::measurement_noise_covariance_t R(
            (observer::Kalman<model::Bicycle>::measurement_noise_covariance_t() <<
-               0.1,       0,
-                 0,   0.008).finished() * constants::as_radians);
+               0.1,     0,     0,
+                 0, 0.008,     0,
+                 0,     0, 0.012).finished() * constants::as_radians);
 } // namesapce kalman
 
 } // namespace defaultvalue

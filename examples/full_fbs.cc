@@ -44,6 +44,7 @@ namespace {
 
     const double sigma0 = 1 * constants::as_radians; // yaw angle measurement noise variance
     const double sigma1 = 0.008 * constants::as_radians; // steer angle measurement noise variance
+    const double sigma2 = 0.012 * constants::as_radians; // steer rate measurement noise variance
 
     bicycle_t::state_t x; // yaw angle, roll angle, steer angle, roll rate, steer rate
     bicycle_t::auxiliary_state_t aux; // x, y, rear wheel angle, pitch angle
@@ -77,6 +78,7 @@ int main(int argc, char* argv[]) {
     std::mt19937 gen(rd());
     std::normal_distribution<> rn0(0, sigma0);
     std::normal_distribution<> rn1(0, sigma1);
+    std::normal_distribution<> rn2(0, sigma2);
 
     bicycle_t bicycle(v0, dt);
     x << 0, 3, 5, 0, 0; // define x0 in degrees
@@ -92,8 +94,9 @@ int main(int argc, char* argv[]) {
             bicycle_t::state_t::Zero(), // starts at zero state
             parameters::defaultvalue::kalman::Q(dt),
             (kalman_t::measurement_noise_covariance_t() <<
-             sigma0,      0,
-                  0, sigma1).finished(),
+             sigma0,      0,      0,
+                  0, sigma1,      0,
+                  0,      0, sigma2).finished(),
             std::pow(x[1]/2, 2) * bicycle_t::state_matrix_t::Identity());
 
     lqr_t lqr(bicycle,
@@ -149,6 +152,7 @@ int main(int argc, char* argv[]) {
         auto z = bicycle.calculate_output(x);
         z(0) += rn0(gen);
         z(1) += rn1(gen);
+        z(2) += rn2(gen);
 
         /* observer time/measurement update */
         kalman.time_update(u);

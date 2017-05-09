@@ -36,6 +36,7 @@ class ConvergenceTest: public ::testing::TestWithParam<model::real_t> {
         std::mt19937 m_gen;
         std::normal_distribution<> m_r0;
         std::normal_distribution<> m_r1;
+        std::normal_distribution<> m_r2;
 };
 
 inline model::BicycleWhipple::state_t ConvergenceTest::x_true() {

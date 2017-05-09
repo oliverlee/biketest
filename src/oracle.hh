@@ -6,12 +6,12 @@
 namespace observer {
 
 template <typename T>
-Oracle<T>::Oracle(T& system) : Observer<T>(system, state_t::Zero()) {
+Oracle<T>::Oracle(T& model) : Observer<T>(model, state_t::Zero()) {
     reset();
 }
 
 template <typename T>
-Oracle<T>::Oracle(T& system, const state_t& x0) : Observer<T>(system, x0) { }
+Oracle<T>::Oracle(T& model, const state_t& x0) : Observer<T>(model, x0) { }
 
 template <typename T>
 void Oracle<T>::reset() {
@@ -20,7 +20,7 @@ void Oracle<T>::reset() {
 
 template <typename T>
 void Oracle<T>::update_state(const input_t& u, const measurement_t& z) {
-    m_x = m_system.normalize_state(m_system.update_state(m_x, u, z));
+    m_x = m_model.normalize_state(m_model.update_state(m_x, u, z));
 }
 
 } // namespace observer

@@ -7,20 +7,20 @@
 namespace observer {
 
 template <typename T>
-Kalman<T>::Kalman(T& system) : Observer<T>(system, state_t::Zero()) {
+Kalman<T>::Kalman(T& model) : Observer<T>(model, state_t::Zero()) {
     reset();
 }
 
 template <typename T>
-Kalman<T>::Kalman(T& system, const state_t& x0) : Observer<T>(system, x0) {
+Kalman<T>::Kalman(T& model, const state_t& x0) : Observer<T>(model, x0) {
     reset();
 }
 
 template <typename T>
-Kalman<T>::Kalman(T& system, const state_t& x0,
+Kalman<T>::Kalman(T& model, const state_t& x0,
         const process_noise_covariance_t& Q,
         const measurement_noise_covariance_t& R,
-        const error_covariance_t& P0) : Observer<T>(system, x0),
+        const error_covariance_t& P0) : Observer<T>(model, x0),
             m_P(P0), m_Q(Q), m_R(R) {
     m_K.setZero();
 }
@@ -80,22 +80,22 @@ void Kalman<T>::measurement_update(const measurement_t& z, const measurement_noi
 
 template <typename T>
 void Kalman<T>::time_update_state() {
-    m_x = m_system.normalize_state(m_system.Ad()*m_x);
+    m_x = m_model.normalize_state(m_model.Ad()*m_x);
 }
 
 template <typename T>
 void Kalman<T>::time_update_state(const input_t& u) {
-    m_x = m_system.normalize_state(m_system.Ad()*m_x + m_system.Bd()*u);
+    m_x = m_model.normalize_state(m_model.Ad()*m_x + m_model.Bd()*u);
 }
 
 template <typename T>
 void Kalman<T>::time_update_error_covariance() {
-    m_P = m_system.Ad()*m_P*m_system.Ad().transpose() + m_Q;
+    m_P = m_model.Ad()*m_P*m_model.Ad().transpose() + m_Q;
 }
 
 template <typename T>
 void Kalman<T>::time_update_error_covariance(const process_noise_covariance_t& Q) {
-    m_P = m_system.Ad()*m_P*m_system.Ad().transpose() + Q;
+    m_P = m_model.Ad()*m_P*m_model.Ad().transpose() + Q;
 }
 
 template <typename T>
@@ -103,8 +103,8 @@ void Kalman<T>::measurement_update_kalman_gain() {
     // S = C*P*C' + R
     // K = P*C'*S^-1 - > K' = S^-1*C*P'
     Eigen::LDLT<measurement_noise_covariance_t> S_ldlt(
-            m_system.Cd()*m_P*m_system.Cd().transpose() + m_R);
-    m_K.noalias() = S_ldlt.solve(m_system.Cd()*m_P.transpose()).transpose();
+            m_model.Cd()*m_P*m_model.Cd().transpose() + m_R);
+    m_K.noalias() = S_ldlt.solve(m_model.Cd()*m_P.transpose()).transpose();
 }
 
 template <typename T>
@@ -112,19 +112,19 @@ void Kalman<T>::measurement_update_kalman_gain(const measurement_noise_covarianc
     // S = C*P*C' + R
     // K = P*C'*S^-1 - > K' = S^-1*C*P'
     Eigen::LDLT<measurement_noise_covariance_t> S_ldlt(
-            m_system.Cd()*m_P*m_system.Cd().transpose() + R);
-    m_K.noalias() = S_ldlt.solve(m_system.Cd()*m_P.transpose()).transpose();
+            m_model.Cd()*m_P*m_model.Cd().transpose() + R);
+    m_K.noalias() = S_ldlt.solve(m_model.Cd()*m_P.transpose()).transpose();
 }
 
 template <typename T>
 void Kalman<T>::measurement_update_state(const measurement_t& z) {
-    m_x = m_system.normalize_state(m_x + m_K*(
-                m_system.normalize_output(z - m_system.Cd()*m_x)));
+    m_x = m_model.normalize_state(m_x + m_K*(
+                m_model.normalize_output(z - m_model.Cd()*m_x)));
 }
 
 template <typename T>
 void Kalman<T>::measurement_update_error_covariance() {
-    m_P = (error_covariance_t::Identity() - m_K*m_system.Cd())*m_P;
+    m_P = (error_covariance_t::Identity() - m_K*m_model.Cd())*m_P;
 }
 
 } // namespace observer

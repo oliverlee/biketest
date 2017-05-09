@@ -4,19 +4,19 @@
 
 namespace model {
 
-/* This class cannot be instantiated and does not allow polymorphic deletion through a base pointer.*/
+// This class cannot be instantiated and does not allow polymorphic deletion through a base pointer.
 class DiscreteLinearBase {
     protected:
         ~DiscreteLinearBase() { }
 };
 
-template <size_t N, size_t M, size_t L, size_t O>
+template <size_t StateSize, size_t InputSize, size_t OutputSize, size_t SecondOrderStateSize>
 class DiscreteLinear : private DiscreteLinearBase {
     public:
-        static constexpr unsigned int n = N; // state size
-        static constexpr unsigned int m = M; // input size
-        static constexpr unsigned int l = L; // output size
-        static constexpr unsigned int o = O; // second order state size
+        static constexpr unsigned int n = StateSize; // state size
+        static constexpr unsigned int m = InputSize; // input size
+        static constexpr unsigned int l = OutputSize; // output size
+        static constexpr unsigned int o = SecondOrderStateSize; // second order state size
 
         using state_t = Eigen::Matrix<real_t, n, 1>;
         using input_t = Eigen::Matrix<real_t, m, 1>;

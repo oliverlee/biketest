@@ -41,6 +41,12 @@ def template_setup(filename):
 if __name__ == "__main__":
     usage = 'generate flatbuffers schema files for given system size\n'
     usage += '{0} <n> <m> <l> <o> <p>'.format(__file__)
+    usage += '\n    <n> - state size'
+    usage += '\n    <m> - input size'
+    usage += '\n    <l> - output size'
+    usage += '\n    <o> - second order state size'
+    usage += '\n    <p> - auxiliary state size'
+
     if len(sys.argv) < 5:
         print(usage)
         sys.exit(1)

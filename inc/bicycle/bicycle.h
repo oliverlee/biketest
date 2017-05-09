@@ -8,7 +8,7 @@ namespace model {
 /* State, Input, and Output Definitions
  * state: [yaw angle, roll angle, steer angle, roll rate, steer rate]
  * input: [roll torque, steer torque]
- * output: [yaw angle, steer angle]
+ * output: [yaw angle, steer angle, steer rate]
  * auxiliary: [x rear contact, y rear contact, rear wheel angle, pitch angle]
  *
  * Note: 2 outputs are defined and are specified by the default C and D matrices,
@@ -20,7 +20,7 @@ namespace model {
  * index access.
  */
 
-class Bicycle : public DiscreteLinear<5, 2, 2, 2> {
+class Bicycle : public DiscreteLinear<5, 2, 3, 2> {
     public:
         static constexpr unsigned int p = 4;
         using auxiliary_state_t = Eigen::Matrix<real_t, p, 1>;
@@ -43,6 +43,7 @@ class Bicycle : public DiscreteLinear<5, 2, 2, 2> {
         enum class output_index_t: uint8_t {
             yaw_angle = 0,
             steer_angle,
+            steer_rate,
             number_of_types
         };
         enum class auxiliary_state_index_t: uint8_t {

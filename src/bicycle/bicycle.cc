@@ -424,6 +424,8 @@ Bicycle::state_t Bicycle::normalize_state(const state_t& x) const {
     mod_two_pi_element(normalized_x, state_index_t::yaw_angle);
     mod_two_pi_element(normalized_x, state_index_t::roll_angle);
     mod_two_pi_element(normalized_x, state_index_t::steer_angle);
+    // roll rate is not modified
+    // steer rate is not modified
     return normalized_x;
 }
 
@@ -432,11 +434,14 @@ Bicycle::output_t Bicycle::normalize_output(const output_t& y) const {
         "Invalid underlying value for output index element");
     static_assert(index(Bicycle::output_index_t::steer_angle) == 1,
         "Invalid underlying value for output index element");
-    static_assert(index(Bicycle::output_index_t::number_of_types) == 2,
+    static_assert(index(Bicycle::output_index_t::steer_rate) == 2,
+        "Invalid underlying value for output index element");
+    static_assert(index(Bicycle::output_index_t::number_of_types) == 3,
         "Invalid underlying value for output index element");
 
     output_t normalized_y = y;
 
+    // range of yaw is [-pi, pi)
     auto yaw = std::fmod(get_element(y, output_index_t::yaw_angle), constants::two_pi);
     if (yaw >= constants::pi) {
         yaw -= constants::two_pi;
@@ -446,6 +451,7 @@ Bicycle::output_t Bicycle::normalize_output(const output_t& y) const {
 
     set_element(normalized_y, output_index_t::yaw_angle, yaw);
     mod_two_pi_element(normalized_y, output_index_t::steer_angle);
+    // steer rate is not modified
     return normalized_y;
 }
 
@@ -462,6 +468,8 @@ Bicycle::auxiliary_state_t Bicycle::normalize_auxiliary_state(const auxiliary_st
         "Invalid underlying value for auxiliary state index element");
 
     auxiliary_state_t normalized_x_aux = x_aux;
+    // x is not modified
+    // y is not modified
     mod_two_pi_element(normalized_x_aux, auxiliary_state_index_t::rear_wheel_angle);
     mod_two_pi_element(normalized_x_aux, auxiliary_state_index_t::pitch_angle);
     return normalized_x_aux;
