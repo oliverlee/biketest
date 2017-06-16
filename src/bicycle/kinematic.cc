@@ -2,13 +2,6 @@
 #include "bicycle/kinematic.h"
 #include "constants.h"
 
-namespace {
-    template <typename E>
-    constexpr uint8_t index(E e) {
-        return static_cast<uint8_t>(e);
-    }
-} // namespace
-
 namespace model {
 BicycleKinematic::BicycleKinematic(const second_order_matrix_t& M, const second_order_matrix_t& C1,
         const second_order_matrix_t& K0, const second_order_matrix_t& K2,
@@ -32,11 +25,34 @@ BicycleKinematic::BicycleKinematic(real_t v, real_t dt) :
 BicycleKinematic::state_t BicycleKinematic::update_state(const BicycleKinematic::state_t& x, const BicycleKinematic::input_t& u, const BicycleKinematic::measurement_t& z) const {
     /*
      * Simplified equations of motion are used to simulate the bicycle dynamics.
-     * Roll/steer rate and acceleration terms are ignored resulting in:
+     * Roll/steer acceleration terms and input torque are ignored resulting in:
      *          (g*K0 + v^2*K2) [phi  ] = [T_phi  ]
      *                          [delta] = [T_delta]
      *
+     * Simplified equations of motion are used to calculate the handlebar feedback torque.
+     * Roll/steer acceleration terms are ignored resulting in:
+     *      [M_00 M_01] [phi_ddot  ] + v*C1 [phi_dot  ] + (g*K0 + v^2*K2) [phi  ] = [T_phi  ]
+     *      [M_10 M_11] [delta_ddot]        [delta_dot]                   [delta] = [T_delta]
+     *
+     * We assume T_phi is zero, and set M_01 = M_10 to zero.
+     *      [M_00    0] [phi_ddot  ] + v*C1 [phi_dot  ] + (g*K0 + v^2*K2) [phi  ] = [      0]
+     *      [   0 M_11] [delta_ddot]        [delta_dot]                   [delta] = [T_delta]
+     *
+     * From the roll equation, we have:
+     *      M_00*phi_ddot + C_00*phi_dot + K_00*phi = -(M_01*delta_ddot + C_01*delta_dot + K_01*delta)
+     *
+     * and with simplifying zeros
+     *      M_00*phi_ddot + C_00*phi_dot + K_00*phi = -(C_01*delta_dot + K_01*delta)
+     *
+     * which we can rewrite in ODE form as as
+     *      [phi_dot ] = [phi_dot                                                      ]
+     *      [phi_ddot] = [-(C_01*delta_dot + K_01*delta + C_00*phi_dot + K_00*phi)/M_00]
+     *
+     * Input u is not directly used.
+     *
+     * For more information, refer to: https://github.com/oliverlee/phobos/issues/161
      */
+
     (void)u;
     const real_t yaw_angle_measurement = get_output_element(z, output_index_t::yaw_angle);
     const real_t steer_angle_measurement = get_output_element(z, output_index_t::steer_angle);

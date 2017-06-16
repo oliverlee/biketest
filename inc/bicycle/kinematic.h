@@ -5,7 +5,7 @@
 
 namespace model {
 
-class BicycleKinematic final : public Bicycle {
+class BicycleKinematic final : public Bicycle<> {
     public:
         BicycleKinematic(const second_order_matrix_t& M, const second_order_matrix_t& C1,
                 const second_order_matrix_t& K0, const second_order_matrix_t& K2,

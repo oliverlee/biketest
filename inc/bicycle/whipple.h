@@ -12,7 +12,7 @@
 
 namespace model {
 
-class BicycleWhipple final : public Bicycle {
+class BicycleWhipple final : public Bicycle<> {
     public:
         /*
          * We normally treat speed v as a double/float. However to allow for constant

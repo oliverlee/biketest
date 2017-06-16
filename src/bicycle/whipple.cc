@@ -1,13 +1,6 @@
 #include <cmath>
 #include "bicycle/whipple.h"
 
-namespace {
-    template <typename E>
-    constexpr uint8_t index(E e) {
-        return static_cast<uint8_t>(e);
-    }
-} // namespace
-
 namespace model {
 BicycleWhipple::BicycleWhipple(const second_order_matrix_t& M, const second_order_matrix_t& C1,
         const second_order_matrix_t& K0, const second_order_matrix_t& K2,
