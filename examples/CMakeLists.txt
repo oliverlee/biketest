@@ -1,10 +1,4 @@
-# BICYCLE_USE_STATE_SPACE_MAP needs to be enabled to state_space_map target
-# but can be left at any state for other binaries
-remove_definitions("-DBICYCLE_USE_STATE_SPACE_MAP=${BICYCLE_USE_STATE_SPACE_MAP}")
-
 add_library(bicycle ${BICYCLE_SOURCE})
-add_library(bicycle_ssm ${BICYCLE_SOURCE})
-target_compile_definitions(bicycle_ssm PRIVATE BICYCLE_USE_STATE_SPACE_MAP=1)
 
 add_executable(bicycle_model bicycle_model.cc)
 add_executable(bicycle_arend_model bicycle_arend_model.cc)
@@ -30,10 +24,8 @@ target_link_libraries(bicycle_param bicycle)
 target_link_libraries(kalman bicycle)
 target_link_libraries(lqr bicycle)
 target_link_libraries(lqr_kalman bicycle)
-target_link_libraries(state_space_map bicycle_ssm)
 target_link_libraries(bicycle_fbs flatbuffers bicycle)
 target_link_libraries(full_fbs flatbuffers bicycle)
 target_link_libraries(udp bicycle)
 target_link_libraries(udp_send_receive bicycle)
 target_link_libraries(serial bicycle)
-target_compile_definitions(state_space_map PRIVATE BICYCLE_USE_STATE_SPACE_MAP=1)

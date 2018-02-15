@@ -27,28 +27,6 @@ namespace {
 
     const model::real_t vw = 4.29238253634111; // forward speed [m/s]
     const model::real_t vc = 6.02426201538837; // forward speed [m/s]
-
-    // These matrices are (obviously) not correct and are used only to
-    // determine if discrete state space matrices are correctly looked up.
-    const model::BicycleWhipple::state_matrix_t Ad_vw(
-            2 * model::BicycleWhipple::state_matrix_t::Identity()
-            );
-    const model::BicycleWhipple::input_matrix_t Bd_vw(
-            3 * model::BicycleWhipple::input_matrix_t::Identity()
-            );
-    const model::BicycleWhipple::state_matrix_t Ad_vc(
-            4 * model::BicycleWhipple::state_matrix_t::Identity()
-            );
-    const model::BicycleWhipple::input_matrix_t Bd_vc(
-            5 * model::BicycleWhipple::input_matrix_t::Identity()
-            );
-
-    const model::BicycleWhipple::state_space_map_t state_space_map {
-        {model::BicycleWhipple::make_state_space_map_key(vw, dt),
-            model::BicycleWhipple::state_space_map_value_t(Ad_vw, Bd_vw)},
-        {model::BicycleWhipple::make_state_space_map_key(vc, dt),
-            model::BicycleWhipple::state_space_map_value_t(Ad_vc, Bd_vc)},
-    };
 } // namespace
 
 TEST_F(StateSpaceTest, ContinuousV1) {
@@ -154,66 +132,4 @@ TEST_F(StateSpaceTest, DiscreteV5) {
 
     EXPECT_TRUE(bicycle->Ad().isApprox(Ad)) << test::output_matrices(bicycle->Ad(), Ad);
     EXPECT_TRUE(bicycle->Bd().isApprox(Bd)) << test::output_matrices(bicycle->Bd(), Bd);
-}
-
-TEST(StateSpace, LookupFound) {
-    model::BicycleWhipple bicycle0(parameters::benchmark::M, parameters::benchmark::C1,
-            parameters::benchmark::K0, parameters::benchmark::K2,
-            parameters::benchmark::wheelbase,
-            parameters::benchmark::trail,
-            parameters::benchmark::steer_axis_tilt,
-            parameters::benchmark::rear_wheel_radius,
-            parameters::benchmark::front_wheel_radius,
-            vw, dt, &state_space_map);
-    model::BicycleWhipple bicycle1(parameters::benchmark::M, parameters::benchmark::C1,
-            parameters::benchmark::K0, parameters::benchmark::K2,
-            parameters::benchmark::wheelbase,
-            parameters::benchmark::trail,
-            parameters::benchmark::steer_axis_tilt,
-            parameters::benchmark::rear_wheel_radius,
-            parameters::benchmark::front_wheel_radius,
-            vw, dt);
-
-    EXPECT_FALSE(bicycle0.Ad().isApprox(bicycle1.Ad())) << test::output_matrices(bicycle0.Ad(), bicycle1.Ad());
-    EXPECT_FALSE(bicycle0.Bd().isApprox(bicycle1.Bd())) << test::output_matrices(bicycle0.Bd(), bicycle1.Bd());
-    EXPECT_TRUE(bicycle0.Ad().isApprox(Ad_vw)) << test::output_matrices(bicycle0.Ad(), Ad_vw);
-    EXPECT_TRUE(bicycle0.Bd().isApprox(Bd_vw)) << test::output_matrices(bicycle0.Bd(), Bd_vw);
-
-    bicycle0.set_v_dt(vc, dt);
-    bicycle1.set_v_dt(vc, dt);
-
-    EXPECT_FALSE(bicycle0.Ad().isApprox(bicycle1.Ad())) << test::output_matrices(bicycle0.Ad(), bicycle1.Ad());
-    EXPECT_FALSE(bicycle0.Bd().isApprox(bicycle1.Bd())) << test::output_matrices(bicycle0.Bd(), bicycle1.Bd());
-    EXPECT_TRUE(bicycle0.Ad().isApprox(Ad_vc)) << test::output_matrices(bicycle0.Ad(), Ad_vc);
-    EXPECT_TRUE(bicycle0.Bd().isApprox(Bd_vc)) << test::output_matrices(bicycle0.Bd(), Bd_vc);
-}
-
-TEST(StateSpace, LookupNotFound) {
-    model::real_t v = 1.0;
-    model::BicycleWhipple bicycle0(parameters::benchmark::M, parameters::benchmark::C1,
-            parameters::benchmark::K0, parameters::benchmark::K2,
-            parameters::benchmark::wheelbase,
-            parameters::benchmark::trail,
-            parameters::benchmark::steer_axis_tilt,
-            parameters::benchmark::rear_wheel_radius,
-            parameters::benchmark::front_wheel_radius,
-            v, dt, &state_space_map);
-    model::BicycleWhipple bicycle1(parameters::benchmark::M, parameters::benchmark::C1,
-            parameters::benchmark::K0, parameters::benchmark::K2,
-            parameters::benchmark::wheelbase,
-            parameters::benchmark::trail,
-            parameters::benchmark::steer_axis_tilt,
-            parameters::benchmark::rear_wheel_radius,
-            parameters::benchmark::front_wheel_radius,
-            v, dt);
-
-    EXPECT_TRUE(bicycle0.Ad().isApprox(bicycle1.Ad())) << test::output_matrices(bicycle0.Ad(), bicycle1.Ad());
-    EXPECT_TRUE(bicycle0.Bd().isApprox(bicycle1.Bd())) << test::output_matrices(bicycle0.Bd(), bicycle1.Bd());
-
-    v = 5.0;
-    bicycle0.set_v_dt(v, dt);
-    bicycle1.set_v_dt(v, dt);
-
-    EXPECT_TRUE(bicycle0.Ad().isApprox(bicycle1.Ad())) << test::output_matrices(bicycle0.Ad(), bicycle1.Ad());
-    EXPECT_TRUE(bicycle0.Bd().isApprox(bicycle1.Bd())) << test::output_matrices(bicycle0.Bd(), bicycle1.Bd());
 }

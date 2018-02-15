@@ -1,12 +1,7 @@
-# BICYCLE_USE_STATE_SPACE_MAP needs to be enabled to state_space_map target
-# but can be left at any state for other binaries
-remove_definitions("-DBICYCLE_USE_STATE_SPACE_MAP=${BICYCLE_USE_STATE_SPACE_MAP}")
-
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 add_executable(test_state_space test_state_space.cc ${BICYCLE_SOURCE})
 target_link_libraries(test_state_space gtest_main)
-target_compile_definitions(test_state_space PRIVATE BICYCLE_USE_STATE_SPACE_MAP=1)
 add_test(NAME test_state_space COMMAND test_state_space)
 
 add_executable(test_kalman test_kalman.cc test_convergence.cc ${BICYCLE_SOURCE})

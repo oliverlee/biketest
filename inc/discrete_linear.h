@@ -33,10 +33,12 @@ class DiscreteLinear : private DiscreteLinearBase {
         virtual state_t update_state(const state_t& x, const input_t& u, const measurement_t& z) const = 0;
         virtual output_t calculate_output(const state_t& x, const input_t& u) const = 0;
 
+#if !defined(BICYCLE_NO_DISCRETIZATION)
         virtual const state_matrix_t& Ad() const = 0;
         virtual const input_matrix_t& Bd() const = 0;
         virtual const output_matrix_t& Cd() const = 0;
         virtual const feedthrough_matrix_t& Dd() const = 0;
+#endif
         virtual real_t dt() const = 0;
 
         virtual state_t normalize_state(const state_t& x) const = 0;

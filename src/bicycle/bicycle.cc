@@ -2,7 +2,9 @@
 #include <cmath>
 #include <fstream>
 #include <type_traits>
+#if !defined(BICYCLE_NO_DISCRETIZATION)
 #include <unsupported/Eigen/MatrixFunctions>
+#endif
 #include "bicycle/bicycle.h"
 #include "parameters.h"
 
@@ -42,7 +44,7 @@ namespace {
         set_element(x, field, modded_value);
     }
 
-#if !defined(NDEBUG)
+#if !defined(NDEBUG) and !defined(BICYCLE_NO_DISCRETIZATION)
     const model::real_t discretization_precision = Eigen::NumTraits<model::real_t>::dummy_precision();
 #endif
 } // namespace
@@ -266,9 +268,12 @@ void Bicycle::set_state_space() {
     m_B.bottomRows<o>() = m_M.inverse();
     m_recalculate_state_space = false;
 
+#if !defined(BICYCLE_NO_DISCRETIZATION)
     set_discrete_state_space();
+#endif
 }
 
+#if !defined(BICYCLE_NO_DISCRETIZATION)
 void Bicycle::set_discrete_state_space() {
     m_Ad.setZero();
     m_Bd.setZero();
@@ -299,6 +304,7 @@ void Bicycle::set_discrete_state_space() {
         m_Bd = T.topRightCorner<n, m>();
     }
 }
+#endif
 
 /* set d1, d2, d3 used in pitch constraint calculation */
 void Bicycle::set_moore_parameters() {
