@@ -54,6 +54,11 @@ typename Lqr<T>::input_t Lqr<T>::control_calculate(const state_t& x, const state
 
 template<typename T>
 void Lqr<T>::perform_value_iteration() {
+    perform_value_iteration(m_horizon);
+}
+
+template<typename T>
+void Lqr<T>::perform_value_iteration() {
     if (!m_system.Ad().isApprox(m_Ag.template topLeftCorner<T::n, T::n>()) ||
             !m_system.Bd().isApprox(m_Bd)) {
         // check if system has changed

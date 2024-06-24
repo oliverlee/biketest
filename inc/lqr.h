@@ -27,6 +27,8 @@ class Lqr {
 
         input_t control_calculate(const state_t& x);
         input_t control_calculate(const state_t& x, const state_t& r);
+        void perform_value_iteration(); // uses m_horizon
+        void perform_value_iteration(uint32_t horizon_iterations);
 
         void set_horizon(uint32_t horizon_iterations);
         void set_reference(const state_t& r);
@@ -75,7 +77,6 @@ class Lqr {
         augmented_lqr_gain_t m_Kg;          // computed feedback gain (standard + integral/tracking)
         augmented_state_cost_t m_Pg;        // augmented cost-to-go matrix
 
-        void perform_value_iteration();
         void update_lqr_gain();
         void update_horizon_cost();
         void set_control_mask();
